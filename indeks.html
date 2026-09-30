@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detektif Bahasa: Media Pembelajaran Fakta vs Opini</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti for Victory Celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Fredoka for playful design -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Fredoka', 'cursive'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            500: '#6366F1',
+                            600: '#4F46E5',
+                            700: '#4338CA',
+                            900: '#312E81',
+                        },
+                        fakta: {
+                            light: '#ECFDF5',
+                            border: '#A7F3D0',
+                            DEFAULT: '#10B981',
+                            dark: '#047857',
+                        },
+                        opini: {
+                            light: '#FFF7ED',
+                            border: '#FED7AA',
+                            DEFAULT: '#F97316',
+                            dark: '#C2410C',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .gradient-banner {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #2563EB 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 30px -5px rgba(79, 70, 229, 0.08), 0 8px 15px -6px rgba(0, 0, 0, 0.04);
+        }
+        .bounce-subtle {
+            animation: bounce-subtle 2s infinite ease-in-out;
+        }
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .dragging {
+            opacity: 0.5;
+            transform: scale(0.96);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+        /* Print layout optimization */
+        @media print {
+            header, nav, .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                padding: 0 !important;
+            }
+            #certificate-frame {
+                border: 6px solid #312E81 !important;
+                box-shadow: none !important;
+                margin: 0 auto !important;
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 antialiased flex flex-col font-sans bg-slate-100 selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Interactive Header -->
+    <header class="gradient-banner text-white sticky top-0 z-40 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner bounce-subtle">
+                    🕵️‍♂️
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-display font-extrabold tracking-wide text-amber-300 drop-shadow">
+                        Detektif Bahasa
+                    </h1>
+                    <p class="text-xs sm:text-sm text-indigo-100 font-medium">Modul Pembelajaran Interaktif: Fakta vs Opini</p>
+                </div>
+            </div>
+
+            <!-- Controls & Student Profile -->
+            <div class="flex items-center space-x-3">
+                <button id="sound-toggle-btn" onclick="toggleSound()" class="p-2.5 bg-white/10 hover:bg-white/20 active:scale-95 rounded-2xl transition duration-200 text-sm font-semibold flex items-center space-x-2 border border-white/20 shadow-sm" title="Aktifkan / Matikan Suara">
+                    <i id="sound-icon" class="fas fa-volume-up text-amber-300"></i>
+                    <span class="hidden sm:inline text-xs" id="sound-label">Suara: ON</span>
+                </button>
+                <div class="hidden md:flex items-center space-x-2 bg-black/25 px-3.5 py-2 rounded-2xl border border-white/20 backdrop-blur-sm">
+                    <i class="fas fa-user-graduate text-amber-300"></i>
+                    <span id="nav-student-name" class="text-xs font-bold text-indigo-50">Detektif Cilik</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation Bar -->
+        <div class="bg-black/20 backdrop-blur-md border-t border-white/10">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex space-x-1 sm:space-x-2 overflow-x-auto py-2 scrollbar-none">
+                <button onclick="switchTab('materi')" id="tab-materi" class="nav-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2 bg-white text-indigo-900 shadow-lg scale-105">
+                    <i class="fas fa-book-open text-indigo-600"></i>
+                    <span>1. Markas Detektif</span>
+                </button>
+                <button onclick="switchTab('game-sort')" id="tab-game-sort" class="nav-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2 hover:bg-white/15 text-white">
+                    <i class="fas fa-boxes-packing text-amber-300"></i>
+                    <span>2. Arena Sortir</span>
+                </button>
+                <button onclick="switchTab('kuis')" id="tab-kuis" class="nav-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2 hover:bg-white/15 text-white">
+                    <i class="fas fa-stopwatch text-emerald-300"></i>
+                    <span>3. Kuis Detektif</span>
+                </button>
+                <button onclick="switchTab('analisis')" id="tab-analisis" class="nav-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2 hover:bg-white/15 text-white">
+                    <i class="fas fa-magnifying-glass text-cyan-300"></i>
+                    <span>4. Lab Berita</span>
+                </button>
+                <button onclick="switchTab('sertifikat')" id="tab-sertifikat" class="nav-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2 hover:bg-white/15 text-white">
+                    <i class="fas fa-award text-yellow-300"></i>
+                    <span>5. Sertifikat</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- SECTION 1: MATERI & KONSEP UTAMA -->
+        <section id="sec-materi" class="tab-content block space-y-6">
+            <!-- Welcome Hero Card -->
+            <div class="bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-800 text-white rounded-3xl p-6 sm:p-8 card-shadow relative overflow-hidden border border-indigo-700/50">
+                <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-3xl space-y-3">
+                    <span class="bg-amber-400/20 text-amber-300 text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full border border-amber-400/30 inline-flex items-center gap-1.5">
+                        <i class="fas fa-star text-amber-300"></i> Pelajaran Bahasa Indonesia Interaktif
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-display font-extrabold text-white tracking-wide">
+                        Selamat Datang, Detektif Cilik! 🔍
+                    </h2>
+                    <p class="text-indigo-100 text-sm sm:text-base leading-relaxed">
+                        Di era informasi digital, kamu harus pandai membedakan kalimat mana yang merupakan <strong class="text-emerald-300 font-bold">FAKTA</strong> (bukti nyata) dan mana yang berupa <strong class="text-amber-300 font-bold">OPINI</strong> (pendapat pribadi) agar tidak terhempas berita hoaks!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Concept Cards Grid -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Fakta Card -->
+                <div class="bg-white rounded-3xl p-6 border-2 border-emerald-200 card-shadow hover:border-emerald-400 transition duration-300 relative group">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-extrabold text-emerald-600 uppercase tracking-wider block">Karakteristik 1</span>
+                            <h3 class="text-xl font-display font-bold text-slate-800">APA ITU FAKTA?</h3>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+                        <strong>Fakta</strong> adalah kejadian atau keadaan nyata yang <span class="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-md font-bold">pasti benar</span> dan memiliki data atau bukti yang valid.
+                    </p>
+                    <div class="space-y-2.5">
+                        <div class="flex items-start space-x-2.5 text-xs sm:text-sm text-slate-700 bg-emerald-50/70 p-3 rounded-2xl border border-emerald-100">
+                            <i class="fas fa-chart-pie text-emerald-500 mt-0.5 text-base"></i>
+                            <span>Mengandung data pasti (angka, tanggal, lokasi, statistik).</span>
+                        </div>
+                        <div class="flex items-start space-x-2.5 text-xs sm:text-sm text-slate-700 bg-emerald-50/70 p-3 rounded-2xl border border-emerald-100">
+                            <i class="fas fa-globe text-emerald-500 mt-0.5 text-base"></i>
+                            <span>Bersifat <strong>Objektif</strong> (semua orang sepakat karena ada buktinya).</span>
+                        </div>
+                        <div class="flex items-start space-x-2.5 text-xs sm:text-sm text-slate-700 bg-emerald-50/70 p-3 rounded-2xl border border-emerald-100">
+                            <i class="fas fa-flask text-emerald-500 mt-0.5 text-base"></i>
+                            <span>Dapat dibuktikan melalui pengujian ilmiah atau dokumen resmi.</span>
+                        </div>
+                    </div>
+                    <!-- Sample Box -->
+                    <div class="mt-5 p-4 bg-emerald-100/70 rounded-2xl border border-emerald-200">
+                        <p class="text-xs font-bold text-emerald-900 mb-1 flex items-center gap-1.5">
+                            <i class="fas fa-lightbulb text-amber-500"></i> Contoh Kalimat Fakta:
+                        </p>
+                        <p class="text-sm italic text-emerald-950 font-medium">"Matahari terbit di sebelah timur dan tenggelam di sebelah barat."</p>
+                    </div>
+                </div>
+
+                <!-- Opini Card -->
+                <div class="bg-white rounded-3xl p-6 border-2 border-orange-200 card-shadow hover:border-orange-400 transition duration-300 relative group">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-extrabold text-orange-600 uppercase tracking-wider block">Karakteristik 2</span>
+                            <h3 class="text-xl font-display font-bold text-slate-800">APA ITU OPINI?</h3>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+                        <strong>Opini</strong> adalah pendapat, pikiran, atau tanggapan seseorang yang <span class="bg-orange-100 text-orange-900 px-2 py-0.5 rounded-md font-bold">belum pasti</span> kebenarannya secara umum.
+                    </p>
+                    <div class="space-y-2.5">
+                        <div class="flex items-start space-x-2.5 text-xs sm:text-sm text-slate-700 bg-orange-50/70 p-3 rounded-2xl border border-orange-100">
+                            <i class="fas fa-scale-unbalanced text-orange-500 mt-0.5 text-base"></i>
+                            <span>Menggunakan kata relatif (<em>sangat, indah, lezat, sepertinya</em>).</span>
+                        </div>
+                        <div class="flex items-start space-x-2.5 text-xs sm:text-sm text-slate-700 bg-orange-50/70 p-3 rounded-2xl border border-orange-100">
+                            <i class="fas fa-user-gear text-orange-500 mt-0.5 text-base"></i>
+                            <span>Bersifat <strong>Subjektif</strong> (setiap orang memiliki pendapat berbeda).</span>
+                        </div>
+                        <div class="flex items-start space-x-2.5 text-xs sm:text-sm text-slate-700 bg-orange-50/70 p-3 rounded-2xl border border-orange-100">
+                            <i class="fas fa-crystal-ball text-orange-500 mt-0.5 text-base"></i>
+                            <span>Berupa ramalan, saran, harapan, atau perasaan pribadi.</span>
+                        </div>
+                    </div>
+                    <!-- Sample Box -->
+                    <div class="mt-5 p-4 bg-orange-100/70 rounded-2xl border border-orange-200">
+                        <p class="text-xs font-bold text-orange-900 mb-1 flex items-center gap-1.5">
+                            <i class="fas fa-lightbulb text-amber-500"></i> Contoh Kalimat Opini:
+                        </p>
+                        <p class="text-sm italic text-orange-950 font-medium">"Pemandangan sore hari di pantai ini adalah yang paling indah di dunia."</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Clue Words Inspector -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-200">
+                <div class="text-center max-w-xl mx-auto mb-6">
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full border border-indigo-200">Fitur Interaktif</span>
+                    <h3 class="text-xl font-display font-bold text-slate-800 mt-2">🔎 Detektor Kata Kunci Rahasia</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">Klik salah satu kata kunci di bawah ini untuk menguji apakah kata tersebut merupakan petunjuk Fakta atau Opini!</p>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-2.5 sm:gap-3" id="clue-words-container">
+                    <!-- Clue buttons dynamically inserted -->
+                </div>
+
+                <div id="clue-result-box" class="mt-6 p-5 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 text-center min-h-[90px] flex items-center justify-center transition-all duration-300">
+                    <p class="text-xs sm:text-sm text-slate-400 italic">Pilih salah satu kata kunci di atas untuk dianalisis...</p>
+                </div>
+            </div>
+
+            <!-- Next Action -->
+            <div class="text-center pt-2">
+                <button onclick="switchTab('game-sort')" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-indigo-500/30 transition duration-300 transform hover:-translate-y-0.5 active:translate-y-0 text-sm sm:text-base inline-flex items-center space-x-2">
+                    <span>Lanjut ke Arena Sortir</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ARENA SORTIR / GAME PILAH KALIMAT -->
+        <section id="sec-game-sort" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-200">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-100 pb-5">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">Permainan Sortir Interaktif</span>
+                        <h2 class="text-2xl font-display font-extrabold text-slate-800 mt-1">Pilah Kartu ke Keranjang Tepat! 🧺</h2>
+                        <p class="text-xs sm:text-sm text-slate-500">Geser (drag-and-drop) kartu pernyataan ke keranjang atau gunakan tombol pilihan di bawahnya.</p>
+                    </div>
+                    <div class="flex items-center space-x-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 self-start md:self-auto">
+                        <div class="text-center px-2">
+                            <span class="text-[10px] text-slate-400 block font-extrabold uppercase">Tersisa</span>
+                            <span id="sort-remaining-count" class="text-xl font-extrabold text-indigo-600">8</span>
+                        </div>
+                        <div class="h-8 w-px bg-slate-200"></div>
+                        <div class="text-center px-2">
+                            <span class="text-[10px] text-slate-400 block font-extrabold uppercase">Skor Game</span>
+                            <span id="sort-score-display" class="text-xl font-extrabold text-emerald-600">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Container -->
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <!-- Source Deck -->
+                    <div class="lg:col-span-1 bg-slate-50 rounded-2xl p-4 border-2 border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-3 flex items-center gap-1.5">
+                                <i class="fas fa-layer-group text-indigo-500"></i> Kartu Aktif Saat Ini:
+                            </h4>
+                            <div id="sort-card-container" class="min-h-[220px] flex items-center justify-center">
+                                <!-- Dynamic Active Card rendered here -->
+                            </div>
+                        </div>
+
+                        <!-- Manual Buttons for Touch / Tap Devices -->
+                        <div class="mt-4 space-y-2">
+                            <p class="text-xs text-center font-bold text-slate-400">Atau tekan tombol di bawah:</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="sortActiveCard('Fakta')" class="py-3 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold rounded-xl shadow transition flex items-center justify-center space-x-2 text-xs sm:text-sm">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>FAKTA</span>
+                                </button>
+                                <button onclick="sortActiveCard('Opini')" class="py-3 bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-bold rounded-xl shadow transition flex items-center justify-center space-x-2 text-xs sm:text-sm">
+                                    <i class="fas fa-comment-dots"></i>
+                                    <span>OPINI</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Target Baskets Area -->
+                    <div class="lg:col-span-2 grid sm:grid-cols-2 gap-4">
+                        <!-- Fakta Basket -->
+                        <div id="basket-fakta" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'Fakta')" class="bg-emerald-50/70 border-2 border-dashed border-emerald-300 rounded-2xl p-4 flex flex-col min-h-[320px] transition duration-200">
+                            <div class="flex items-center justify-between border-b border-emerald-200 pb-3 mb-3">
+                                <div class="flex items-center space-x-2 text-emerald-900 font-extrabold text-sm">
+                                    <i class="fas fa-folder-closed text-emerald-600 text-lg"></i>
+                                    <span>KERANJANG FAKTA</span>
+                                </div>
+                                <span id="basket-fakta-count" class="bg-emerald-200 text-emerald-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0 Item</span>
+                            </div>
+                            <div id="basket-fakta-list" class="space-y-2 flex-1 overflow-y-auto max-h-[250px] pr-1">
+                                <!-- Dropped items go here -->
+                            </div>
+                        </div>
+
+                        <!-- Opini Basket -->
+                        <div id="basket-opini" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'Opini')" class="bg-orange-50/70 border-2 border-dashed border-orange-300 rounded-2xl p-4 flex flex-col min-h-[320px] transition duration-200">
+                            <div class="flex items-center justify-between border-b border-orange-200 pb-3 mb-3">
+                                <div class="flex items-center space-x-2 text-orange-900 font-extrabold text-sm">
+                                    <i class="fas fa-folder-closed text-orange-600 text-lg"></i>
+                                    <span>KERANJANG OPINI</span>
+                                </div>
+                                <span id="basket-opini-count" class="bg-orange-200 text-orange-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0 Item</span>
+                            </div>
+                            <div id="basket-opini-list" class="space-y-2 flex-1 overflow-y-auto max-h-[250px] pr-1">
+                                <!-- Dropped items go here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-4 border-t border-slate-100 mt-4">
+                    <button onclick="resetSortGame()" class="text-xs text-slate-500 hover:text-slate-800 font-bold underline flex items-center gap-1">
+                        <i class="fas fa-rotate-left"></i> Ulangi Permainan
+                    </button>
+                    <button onclick="switchTab('kuis')" class="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs sm:text-sm hover:bg-indigo-700 shadow transition">
+                        Lanjut ke Kuis Detektif <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: KUIS DETEKTIF BERTIMER -->
+        <section id="sec-kuis" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-200 max-w-3xl mx-auto">
+                <!-- Header Progress & Timer -->
+                <div id="quiz-game-header" class="space-y-4">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-500">
+                        <span id="quiz-question-number" class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-100">Soal 1 dari 5</span>
+                        <div class="flex items-center space-x-2 bg-amber-50 text-amber-800 px-3 py-1 rounded-full border border-amber-200">
+                            <i class="fas fa-clock text-amber-500"></i>
+                            <span>Waktu: <strong id="quiz-timer" class="text-amber-700 text-sm">15</strong>s</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden p-0.5 border border-slate-200">
+                        <div id="quiz-progress-bar" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-300" style="width: 20%"></div>
+                    </div>
+                </div>
+
+                <!-- Main Quiz Card -->
+                <div id="quiz-box" class="mt-6">
+                    <div class="bg-indigo-50/60 p-6 sm:p-8 rounded-3xl border-2 border-indigo-100 text-center min-h-[150px] flex flex-col items-center justify-center relative overflow-hidden">
+                        <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2 flex items-center gap-1">
+                            <i class="fas fa-circle-question"></i> Kasus #<span id="case-num">1</span>
+                        </span>
+                        <p id="quiz-statement-text" class="text-base sm:text-xl font-bold text-slate-800 leading-snug">
+                            "Membaca pertanyaan..."
+                        </p>
+                    </div>
+
+                    <!-- Options Buttons -->
+                    <div class="grid grid-cols-2 gap-4 mt-6">
+                        <button onclick="submitQuizAnswer('Fakta')" class="quiz-option-btn p-4 rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 text-emerald-900 font-extrabold text-base transition flex flex-col items-center space-y-1 group active:scale-95">
+                            <i class="fas fa-check-circle text-2xl group-hover:scale-110 transition"></i>
+                            <span>FAKTA</span>
+                        </button>
+                        <button onclick="submitQuizAnswer('Opini')" class="quiz-option-btn p-4 rounded-2xl border-2 border-orange-200 bg-orange-50/40 hover:bg-orange-500 hover:text-white hover:border-orange-500 text-orange-900 font-extrabold text-base transition flex flex-col items-center space-y-1 group active:scale-95">
+                            <i class="fas fa-comment-dots text-2xl group-hover:scale-110 transition"></i>
+                            <span>OPINI</span>
+                        </button>
+                    </div>
+
+                    <!-- Instant Feedback Callout -->
+                    <div id="quiz-feedback" class="mt-6 p-4 rounded-2xl hidden transition-all duration-300">
+                        <div class="flex items-start space-x-3">
+                            <div id="feedback-icon-box" class="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 font-bold text-white shadow-sm"></div>
+                            <div>
+                                <h5 id="feedback-title" class="font-bold text-sm"></h5>
+                                <p id="feedback-explanation" class="text-xs sm:text-sm mt-1 leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Next Question Action -->
+                    <div class="mt-6 text-right">
+                        <button id="quiz-next-btn" onclick="loadNextQuizQuestion()" class="hidden px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl text-xs sm:text-sm hover:bg-indigo-700 shadow-lg">
+                            Soal Berikutnya <i class="fas fa-arrow-right ml-1.5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Summary View -->
+                <div id="quiz-summary" class="hidden text-center py-8 space-y-5">
+                    <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-3xl flex items-center justify-center text-4xl mx-auto shadow-inner bounce-subtle">
+                        🏆
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-display font-extrabold text-slate-800">Kuis Detektif Selesai!</h3>
+                        <p class="text-slate-500 text-xs sm:text-sm mt-1">Berikut hasil evaluasi ketelitian kamu:</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 max-w-sm mx-auto shadow-sm">
+                        <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Total Skor Kuis</span>
+                        <span id="final-quiz-score" class="text-5xl font-display font-extrabold text-indigo-600 block my-1">0</span>
+                        <p id="quiz-evaluation-text" class="text-xs font-semibold text-slate-600 mt-2 leading-relaxed"></p>
+                    </div>
+
+                    <div class="pt-2 flex justify-center space-x-3">
+                        <button onclick="restartQuiz()" class="px-5 py-2.5 border border-slate-300 hover:bg-slate-100 rounded-2xl font-bold text-slate-700 text-xs sm:text-sm">
+                            <i class="fas fa-rotate-left mr-1"></i> Coba Lagi
+                        </button>
+                        <button onclick="switchTab('analisis')" class="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-2xl text-xs sm:text-sm hover:bg-indigo-700 shadow">
+                            Lanjut ke Lab Berita <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: LAB ANALISIS TEKS BERITA -->
+        <section id="sec-analisis" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-200">
+                <div class="max-w-2xl mb-6">
+                    <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">Laboratorium Analisis</span>
+                    <h2 class="text-2xl font-display font-extrabold text-slate-800 mt-1">Bedah Paragraf Berita 📰</h2>
+                    <p class="text-xs sm:text-sm text-slate-500">Klik setiap kalimat di dalam artikel berita di bawah ini untuk mengidentifikasi apakah kalimat tersebut **Fakta** atau **Opini**.</p>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <!-- Article Interactive Container -->
+                    <div class="lg:col-span-2 bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-4">
+                        <div class="flex items-center space-x-2 border-b border-slate-200 pb-3">
+                            <span class="bg-rose-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Artikel Laporan</span>
+                            <h4 class="font-bold text-slate-800 text-sm sm:text-base">Candi Borobudur Jadi Destinasi Favorit Liburan</h4>
+                        </div>
+                        
+                        <div class="text-sm leading-relaxed text-slate-800 space-y-3" id="interactive-article">
+                            <!-- Sentences dynamically generated here -->
+                        </div>
+                    </div>
+
+                    <!-- Inspector Control Box -->
+                    <div class="lg:col-span-1 bg-white p-5 rounded-3xl border-2 border-indigo-100 card-shadow flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fas fa-microscope text-indigo-500"></i> Inspektor Kalimat:
+                            </h4>
+                            
+                            <div id="inspector-placeholder" class="py-10 text-center text-slate-400 text-xs space-y-2">
+                                <i class="fas fa-hand-pointer text-3xl text-indigo-300 block bounce-subtle"></i>
+                                <span>Klik salah satu kalimat bergaris bawah di artikel untuk dianalisis.</span>
+                            </div>
+
+                            <div id="inspector-active" class="hidden space-y-4">
+                                <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-700 italic font-medium" id="inspector-sentence-text">
+                                    ""
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label class="text-xs font-bold text-slate-500 block">Klasifikasikan Kalimat Ini:</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button onclick="verifyArticleSentence('Fakta')" class="py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-xs shadow active:scale-95">
+                                            <i class="fas fa-check-circle mr-1"></i> FAKTA
+                                        </button>
+                                        <button onclick="verifyArticleSentence('Opini')" class="py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-xs shadow active:scale-95">
+                                            <i class="fas fa-comment-dots mr-1"></i> OPINI
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="inspector-result-feedback" class="p-3 rounded-2xl text-xs hidden"></div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 border-t border-slate-100 pt-4">
+                            <div class="flex justify-between items-center text-xs font-bold">
+                                <span class="text-slate-500">Kemajuan Analisis:</span>
+                                <span id="article-progress-text" class="text-indigo-600">0 / 4 Kalimat</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 text-right border-t border-slate-100 mt-4">
+                    <button onclick="switchTab('sertifikat')" class="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs sm:text-sm hover:bg-indigo-700 shadow">
+                        Lihat Sertifikat Kelulusan <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: SERTIFIKAT KELULUSAN -->
+        <section id="sec-sertifikat" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-200 max-w-4xl mx-auto">
+                <div class="text-center max-w-xl mx-auto mb-6 no-print">
+                    <span class="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">Penghargaan Resmi</span>
+                    <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-slate-800 mt-1">Sertifikat Detektif Bahasa 🎓</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">Ketik nama lengkap kamu di bawah ini untuk dicantumkan secara resmi di sertifikat kelulusan.</p>
+                </div>
+
+                <!-- Student Name Input Form (No Print) -->
+                <div class="max-w-md mx-auto mb-8 flex gap-2 no-print">
+                    <input type="text" id="input-student-name" placeholder="Tuliskan Nama Lengkap Kamu..." class="flex-1 px-4 py-3 border-2 border-slate-200 rounded-2xl text-xs sm:text-sm focus:border-indigo-500 focus:outline-none font-bold text-slate-800">
+                    <button onclick="updateCertificateName()" class="px-5 py-3 bg-indigo-600 text-white font-bold rounded-2xl text-xs sm:text-sm hover:bg-indigo-700 shadow shrink-0">
+                        Perbarui Nama
+                    </button>
+                </div>
+
+                <!-- Certificate Graphic Frame -->
+                <div id="certificate-frame" class="border-8 border-indigo-900 rounded-3xl p-6 sm:p-12 bg-gradient-to-br from-amber-50 via-white to-indigo-50 relative overflow-hidden shadow-2xl">
+                    <!-- Ornamental Corner Icons -->
+                    <div class="absolute top-3 left-3 text-indigo-900/15 text-5xl"><i class="fas fa-award"></i></div>
+                    <div class="absolute top-3 right-3 text-indigo-900/15 text-5xl"><i class="fas fa-award"></i></div>
+                    <div class="absolute bottom-3 left-3 text-indigo-900/15 text-5xl"><i class="fas fa-certificate"></i></div>
+                    <div class="absolute bottom-3 right-3 text-indigo-900/15 text-5xl"><i class="fas fa-certificate"></i></div>
+
+                    <div class="text-center space-y-4 relative z-10">
+                        <div class="inline-block px-4 py-1.5 bg-indigo-100 rounded-2xl text-indigo-950 text-xs sm:text-sm font-extrabold uppercase tracking-widest mb-1 border border-indigo-200">
+                            🎓 SERTIFIKAT KELULUSAN DETEKTIF BAHASA
+                        </div>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Diberikan Sebagai Penghargaan Kepada:</p>
+                        
+                        <h3 id="cert-name-display" class="text-3xl sm:text-5xl font-display font-extrabold text-indigo-950 underline underline-offset-8 decoration-amber-400 py-2">
+                            Detektif Cilik
+                        </h3>
+
+                        <p class="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto leading-relaxed pt-1">
+                            Telah berhasil menyelesaikan seluruh rangkaian modul pembelajaran interaktif, permainan sortir, kuis evaluasi, serta analisis paragraf berita pada topik:
+                        </p>
+                        
+                        <div class="text-indigo-800 font-display font-extrabold text-base sm:text-xl">
+                            "Kemahiran Membedakan Fakta dan Opini"
+                        </div>
+
+                        <!-- Score Breakdown Badges -->
+                        <div class="grid grid-cols-3 gap-3 max-w-md mx-auto pt-4">
+                            <div class="bg-white/90 p-3 rounded-2xl border border-slate-200 text-center shadow-sm">
+                                <span class="text-[9px] text-slate-400 font-extrabold block uppercase">Arena Sortir</span>
+                                <span id="cert-score-sort" class="text-base sm:text-lg font-black text-emerald-600">0 Poin</span>
+                            </div>
+                            <div class="bg-white/90 p-3 rounded-2xl border border-slate-200 text-center shadow-sm">
+                                <span class="text-[9px] text-slate-400 font-extrabold block uppercase">Kuis Detektif</span>
+                                <span id="cert-score-quiz" class="text-base sm:text-lg font-black text-indigo-600">0 Poin</span>
+                            </div>
+                            <div class="bg-white/90 p-3 rounded-2xl border border-slate-200 text-center shadow-sm">
+                                <span class="text-[9px] text-slate-400 font-extrabold block uppercase">Lab Berita</span>
+                                <span id="cert-score-article" class="text-base sm:text-lg font-black text-amber-600">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 flex items-center justify-between border-t border-slate-200/80 max-w-md mx-auto text-[11px] text-slate-500 font-semibold">
+                            <span>Status: TERVERIFIKASI GURU</span>
+                            <span id="cert-date-display">Tanggal: --/--/----</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Print & Share Actions (No Print) -->
+                <div class="pt-6 text-center space-x-3 no-print">
+                    <button onclick="window.print()" class="px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-2xl text-xs sm:text-sm shadow inline-flex items-center space-x-2">
+                        <i class="fas fa-print"></i>
+                        <span>Cetak Sertifikat</span>
+                    </button>
+                    <button onclick="triggerCelebration()" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl text-xs sm:text-sm shadow inline-flex items-center space-x-2">
+                        <i class="fas fa-champagne-glasses"></i>
+                        <span>Rayakan Kelulusan 🎉</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        let soundEnabled = true;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new AudioCtx();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15); // E5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.exponentialRampToValueAtTime(130.81, now + 0.2);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'click') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'win') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.4);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                }
+            } catch (e) {
+                console.log("Audio Web API ready");
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-icon').className = soundEnabled ? 'fas fa-volume-up text-amber-300' : 'fas fa-volume-mute text-rose-300';
+            document.getElementById('sound-label').textContent = soundEnabled ? 'Suara: ON' : 'Suara: OFF';
+        }
+
+        let state = {
+            studentName: 'Detektif Cilik',
+            sortScore: 0,
+            quizScore: 0,
+            articleScore: 0,
+            currentTab: 'materi'
+        };
+
+        function switchTab(tabId) {
+            playSound('click');
+            state.currentTab = tabId;
+
+            // Reset tab styles
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.className = 'nav-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2 hover:bg-white/15 text-white';
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = 'nav-tab px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2 bg-white text-indigo-900 shadow-lg scale-105';
+            }
+
+            // Hide/Show contents
+            document.querySelectorAll('.tab-content').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+
+            if (tabId === 'sertifikat') {
+                updateCertificateView();
+            }
+        }
+
+        const clueWords = [
+            { word: "Menurut saya", type: "Opini", desc: "Menandakan sudut pandang pribadi seseorang." },
+            { word: "Tanggal 17 Agustus 1945", type: "Fakta", desc: "Data historis resmi yang memiliki catatan pasti." },
+            { word: "Sangat Indah", type: "Opini", desc: "Sifat relatif, penilaian keindahan tiap orang berbeda." },
+            { word: "Suhu 100°C", type: "Fakta", desc: "Ukuran kuantitatif pasti dari hasil ilmiah." },
+            { word: "Sepertinya", type: "Opini", desc: "Kata dugaan atau perkiraan yang belum pasti." },
+            { word: "Luas 1.905.783 km²", type: "Fakta", desc: "Data statistik resmi dari pengukuran geografi." }
+        ];
+
+        function initClueWheel() {
+            const container = document.getElementById('clue-words-container');
+            container.innerHTML = '';
+            clueWords.forEach((item) => {
+                const btn = document.createElement('button');
+                btn.className = `px-3.5 py-2 rounded-xl text-xs font-bold transition duration-200 border shadow-sm ${
+                    item.type === 'Fakta' 
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-500 hover:text-white' 
+                    : 'bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-500 hover:text-white'
+                }`;
+                btn.innerHTML = `<i class="${item.type === 'Fakta' ? 'fas fa-tag' : 'fas fa-comment'} mr-1.5"></i>"${item.word}"`;
+                btn.onclick = () => {
+                    playSound('click');
+                    const box = document.getElementById('clue-result-box');
+                    box.className = `mt-6 p-4 rounded-2xl text-center min-h-[90px] flex flex-col justify-center border-2 ${
+                        item.type === 'Fakta' ? 'bg-emerald-50 border-emerald-300 text-emerald-950' : 'bg-orange-50 border-orange-300 text-orange-950'
+                    }`;
+                    box.innerHTML = `
+                        <div class="font-extrabold text-sm mb-1 flex items-center justify-center gap-2">
+                            <span>Kata "${item.word}" 👉</span>
+                            <span class="uppercase tracking-wider px-2.5 py-0.5 rounded text-xs ${item.type==='Fakta'?'bg-emerald-200 text-emerald-900':'bg-orange-200 text-orange-900'}">${item.type}</span>
+                        </div>
+                        <p class="text-xs text-slate-600">${item.desc}</p>
+                    `;
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        const sortCardsData = [
+            { id: 1, text: "Air mendidih pada suhu 100 derajat Celsius pada tekanan normal.", type: "Fakta" },
+            { id: 2, text: "Kucing persia adalah hewan yang paling lucu di seluruh dunia.", type: "Opini" },
+            { id: 3, text: "Ibu kota Negara Indonesia saat ini adalah DKI Jakarta.", type: "Fakta" },
+            { id: 4, text: "Pelajaran Matematika sangat membosankan dan terlalu rumit.", type: "Opini" },
+            { id: 5, text: "Candi Borobudur terletak di Kabupaten Magelang, Jawa Tengah.", type: "Fakta" },
+            { id: 6, text: "Makanan pedas pasti terasa jauh lebih nikmat daripada makanan manis.", type: "Opini" },
+            { id: 7, text: "Manusia membutuhkan oksigen untuk bernapas.", type: "Fakta" },
+            { id: 8, text: "Sepertinya sore nanti akan turun hujan sangat deras.", type: "Opini" }
+        ];
+
+        let remainingSortCards = [...sortCardsData];
+        let currentSortCard = null;
+
+        function loadSortCard() {
+            const container = document.getElementById('sort-card-container');
+            document.getElementById('sort-remaining-count').textContent = remainingSortCards.length;
+
+            if (remainingSortCards.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-6 space-y-2">
+                        <div class="text-4xl">🎉</div>
+                        <h4 class="font-bold text-slate-800 text-sm">Keranjang Penuh!</h4>
+                        <p class="text-xs text-slate-500">Semua kartu berhasil dipilahkan!</p>
+                    </div>
+                `;
+                currentSortCard = null;
+                playSound('win');
+                triggerCelebration();
+                return;
+            }
+
+            currentSortCard = remainingSortCards[0];
+            container.innerHTML = `
+                <div id="active-drag-card" draggable="true" ondragstart="handleDragStart(event)" class="bg-white p-5 rounded-2xl border-2 border-indigo-200 card-shadow cursor-grab active:cursor-grabbing text-center space-y-3 w-full transform transition hover:scale-105">
+                    <span class="bg-indigo-100 text-indigo-700 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Kartu #${currentSortCard.id}</span>
+                    <p class="text-sm font-bold text-slate-800 leading-snug">"${currentSortCard.text}"</p>
+                    <span class="text-[10px] text-slate-400 block font-semibold"><i class="fas fa-hand-pointer mr-1"></i> Geser ke keranjang atau gunakan tombol</span>
+                </div>
+            `;
+        }
+
+        function sortActiveCard(targetType) {
+            if (!currentSortCard) return;
+
+            if (currentSortCard.type === targetType) {
+                playSound('correct');
+                state.sortScore += 10;
+                document.getElementById('sort-score-display').textContent = state.sortScore;
+
+                const basketList = document.getElementById(`basket-${targetType.toLowerCase()}-list`);
+                const badge = document.createElement('div');
+                badge.className = `p-2.5 rounded-xl text-xs font-semibold border flex items-center justify-between ${
+                    targetType === 'Fakta' ? 'bg-emerald-100/70 border-emerald-200 text-emerald-950' : 'bg-orange-100/70 border-orange-200 text-orange-950'
+                }`;
+                badge.innerHTML = `
+                    <span>"${currentSortCard.text}"</span>
+                    <i class="fas fa-check-circle text-emerald-600 ml-2 shrink-0"></i>
+                `;
+                basketList.prepend(badge);
+
+                const countBadge = document.getElementById(`basket-${targetType.toLowerCase()}-count`);
+                countBadge.textContent = `${basketList.children.length} Item`;
+
+                remainingSortCards.shift();
+                loadSortCard();
+            } else {
+                playSound('wrong');
+                const activeCard = document.getElementById('active-drag-card');
+                if (activeCard) {
+                    activeCard.classList.add('border-rose-500', 'animate-bounce');
+                    setTimeout(() => {
+                        activeCard.classList.remove('border-rose-500', 'animate-bounce');
+                    }, 600);
+                }
+            }
+        }
+
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', currentSortCard.type);
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDrop(e, targetType) {
+            e.preventDefault();
+            sortActiveCard(targetType);
+        }
+
+        function resetSortGame() {
+            playSound('click');
+            remainingSortCards = [...sortCardsData];
+            state.sortScore = 0;
+            document.getElementById('sort-score-display').textContent = '0';
+            document.getElementById('basket-fakta-list').innerHTML = '';
+            document.getElementById('basket-opini-list').innerHTML = '';
+            document.getElementById('basket-fakta-count').textContent = '0 Item';
+            document.getElementById('basket-opini-count').textContent = '0 Item';
+            loadSortCard();
+        }
+
+        const quizQuestions = [
+            {
+                question: "Monumen Nasional (Monas) berada di DKI Jakarta.",
+                answer: "Fakta",
+                explanation: "Terdapat bukti lokasi geografis dan administratif resmi yang tercatat di peta."
+            },
+            {
+                question: "Es krim rasa cokelat terasa jauh lebih enak daripada rasa vanila.",
+                answer: "Opini",
+                explanation: "Rasa enak bersifat relatif dan tergantung pada selera lidah masing-masing."
+            },
+            {
+                question: "Lagu Indonesia Raya diciptakan oleh W.R. Supratman.",
+                answer: "Fakta",
+                explanation: "Memiliki catatan sejarah kebudayaan nasional yang pasti dan dibuktikan dokumen resmi."
+            },
+            {
+                question: "Seragam sekolah warna putih-biru terlihat sangat keren.",
+                answer: "Opini",
+                explanation: "Penggunaan kata 'sangat keren' adalah pendapat penilaian subjektif."
+            },
+            {
+                question: "Jantung berfungsi memompa darah ke seluruh tubuh manusia.",
+                answer: "Fakta",
+                explanation: "Merupakan fakta medis biologi yang teruji secara ilmiah."
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let quizTimerInterval = null;
+        let quizTimeLeft = 15;
+
+        function loadQuizQuestion() {
+            clearInterval(quizTimerInterval);
+            quizTimeLeft = 15;
+            document.getElementById('quiz-timer').textContent = quizTimeLeft;
+
+            const q = quizQuestions[currentQuizIndex];
+            document.getElementById('case-num').textContent = currentQuizIndex + 1;
+            document.getElementById('quiz-question-number').textContent = `Soal ${currentQuizIndex + 1} dari ${quizQuestions.length}`;
+            document.getElementById('quiz-statement-text').textContent = `"${q.question}"`;
+            document.getElementById('quiz-progress-bar').style.width = `${((currentQuizIndex + 1) / quizQuestions.length) * 100}%`;
+
+            document.querySelectorAll('.quiz-option-btn').forEach(btn => btn.disabled = false);
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+
+            quizTimerInterval = setInterval(() => {
+                quizTimeLeft--;
+                document.getElementById('quiz-timer').textContent = quizTimeLeft;
+                if (quizTimeLeft <= 0) {
+                    clearInterval(quizTimerInterval);
+                    submitQuizAnswer('timeout');
+                }
+            }, 1000);
+        }
+
+        function submitQuizAnswer(selected) {
+            clearInterval(quizTimerInterval);
+            document.querySelectorAll('.quiz-option-btn').forEach(btn => btn.disabled = true);
+
+            const q = quizQuestions[currentQuizIndex];
+            const feedbackBox = document.getElementById('quiz-feedback');
+            const iconBox = document.getElementById('feedback-icon-box');
+            const titleEl = document.getElementById('feedback-title');
+            const expEl = document.getElementById('feedback-explanation');
+
+            feedbackBox.classList.remove('hidden');
+
+            if (selected === q.answer) {
+                playSound('correct');
+                state.quizScore += 20;
+                feedbackBox.className = 'mt-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950';
+                iconBox.className = 'w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 font-bold text-white bg-emerald-500 shadow-sm';
+                iconBox.innerHTML = '<i class="fas fa-check"></i>';
+                titleEl.textContent = 'Analisis Tepat! (+20 Poin)';
+                expEl.textContent = q.explanation;
+            } else {
+                playSound('wrong');
+                feedbackBox.className = 'mt-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950';
+                iconBox.className = 'w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 font-bold text-white bg-rose-500 shadow-sm';
+                iconBox.innerHTML = '<i class="fas fa-times"></i>';
+                titleEl.textContent = selected === 'timeout' ? 'Waktu Habis!' : 'Kurang Tepat!';
+                expEl.textContent = `Jawaban yang benar adalah ${q.answer}. ${q.explanation}`;
+            }
+
+            document.getElementById('quiz-next-btn').classList.remove('hidden');
+        }
+
+        function loadNextQuizQuestion() {
+            playSound('click');
+            currentQuizIndex++;
+            if (currentQuizIndex < quizQuestions.length) {
+                loadQuizQuestion();
+            } else {
+                showQuizSummary();
+            }
+        }
+
+        function showQuizSummary() {
+            document.getElementById('quiz-game-header').classList.add('hidden');
+            document.getElementById('quiz-box').classList.add('hidden');
+            document.getElementById('quiz-summary').classList.remove('hidden');
+
+            document.getElementById('final-quiz-score').textContent = state.quizScore;
+            
+            const evalText = document.getElementById('quiz-evaluation-text');
+            if (state.quizScore === 100) {
+                evalText.textContent = "Sempurna! Kamu adalah detektif hebat yang sangat jeli membedakan fakta dan opini!";
+                playSound('win');
+                triggerCelebration();
+            } else if (state.quizScore >= 60) {
+                evalText.textContent = "Kerja bagus! Pemahaman kamu sudah sangat baik.";
+            } else {
+                evalText.textContent = "Jangan berkecil hati! Pelajari kembali materi ringkasan di Markas Detektif.";
+            }
+        }
+
+        function restartQuiz() {
+            currentQuizIndex = 0;
+            state.quizScore = 0;
+            document.getElementById('quiz-game-header').classList.remove('hidden');
+            document.getElementById('quiz-box').classList.remove('hidden');
+            document.getElementById('quiz-summary').classList.add('hidden');
+            loadQuizQuestion();
+        }
+
+        const articleSentences = [
+            { id: 0, text: "Candi Borobudur dibangun pada abad ke-8 masehi oleh Dinasti Syailendra.", type: "Fakta", checked: false },
+            { id: 1, text: "Bangunan bersejarah ini dinilai sebagai candi terindah yang paling mengagumkan di Asia.", type: "Opini", checked: false },
+            { id: 2, text: "Setiap libur akhir pekan, ribuan wisatawan dari berbagai daerah mengunjungi lokasi candi ini.", type: "Fakta", checked: false },
+            { id: 3, text: "Seharusnya pemerintah membebaskan biaya tiket masuk agar semua pengunjung merasa gembira.", type: "Opini", checked: false }
+        ];
+
+        let selectedArticleIndex = null;
+
+        function renderInteractiveArticle() {
+            const container = document.getElementById('interactive-article');
+            container.innerHTML = '';
+
+            articleSentences.forEach((item, index) => {
+                const span = document.createElement('span');
+                span.className = `cursor-pointer rounded-lg px-1.5 py-1 transition duration-150 inline-block m-0.5 font-medium ${
+                    item.checked 
+                    ? (item.type === 'Fakta' ? 'bg-emerald-200 text-emerald-950 font-bold border border-emerald-300' : 'bg-orange-200 text-orange-950 font-bold border border-orange-300') 
+                    : 'bg-indigo-50 hover:bg-indigo-200 text-indigo-900 underline underline-offset-4 decoration-indigo-300'
+                }`;
+                span.textContent = item.text + " ";
+                span.onclick = () => selectArticleSentence(index);
+                container.appendChild(span);
+            });
+
+            const completed = articleSentences.filter(s => s.checked).length;
+            document.getElementById('article-progress-text').textContent = `${completed} / ${articleSentences.length} Kalimat`;
+            state.articleScore = Math.round((completed / articleSentences.length) * 100);
+        }
+
+        function selectArticleSentence(index) {
+            playSound('click');
+            selectedArticleIndex = index;
+            const item = articleSentences[index];
+
+            document.getElementById('inspector-placeholder').classList.add('hidden');
+            document.getElementById('inspector-active').classList.remove('hidden');
+            document.getElementById('inspector-sentence-text').textContent = `"${item.text}"`;
+            document.getElementById('inspector-result-feedback').classList.add('hidden');
+        }
+
+        function verifyArticleSentence(chosenType) {
+            if (selectedArticleIndex === null) return;
+
+            const item = articleSentences[selectedArticleIndex];
+            const feedback = document.getElementById('inspector-result-feedback');
+            feedback.classList.remove('hidden');
+
+            if (chosenType === item.type) {
+                playSound('correct');
+                item.checked = true;
+                feedback.className = 'p-3 rounded-2xl text-xs bg-emerald-100 text-emerald-900 font-bold border border-emerald-300';
+                feedback.innerHTML = `<i class="fas fa-check-circle mr-1 text-emerald-600"></i> Tepat! Kalimat ini adalah <strong>${item.type}</strong>.`;
+            } else {
+                playSound('wrong');
+                feedback.className = 'p-3 rounded-2xl text-xs bg-rose-100 text-rose-900 font-bold border border-rose-300';
+                feedback.innerHTML = `<i class="fas fa-times-circle mr-1 text-rose-600"></i> Kurang tepat. Kalimat ini tergolong <strong>${item.type}</strong>.`;
+            }
+
+            renderInteractiveArticle();
+        }
+
+        function updateCertificateName() {
+            const input = document.getElementById('input-student-name').value.trim();
+            if (input !== '') {
+                playSound('click');
+                state.studentName = input;
+                document.getElementById('nav-student-name').textContent = input;
+                updateCertificateView();
+            }
+        }
+
+        function updateCertificateView() {
+            document.getElementById('cert-name-display').textContent = state.studentName;
+            document.getElementById('cert-score-sort').textContent = `${state.sortScore} Poin`;
+            document.getElementById('cert-score-quiz').textContent = `${state.quizScore} Poin`;
+            document.getElementById('cert-score-article').textContent = `${state.articleScore}%`;
+
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('cert-date-display').textContent = `Tanggal: ${dateStr}`;
+        }
+
+        function triggerCelebration() {
+            playSound('win');
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        window.onload = function() {
+            initClueWheel();
+            loadSortCard();
+            loadQuizQuestion();
+            renderInteractiveArticle();
+            updateCertificateView();
+        };
+    </script>
+</body>
+</html>
